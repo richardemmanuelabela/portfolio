@@ -38,11 +38,11 @@ window.addEventListener('scroll', () => {
     const currentScroll = window.pageYOffset;
     
     if (currentScroll > 100) {
-        navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-        navbar.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+        navbar.style.background = 'rgba(10, 14, 39, 0.98)';
+        navbar.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.5)';
     } else {
-        navbar.style.background = 'rgba(255, 255, 255, 0.95)';
-        navbar.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+        navbar.style.background = 'rgba(10, 14, 39, 0.95)';
+        navbar.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.5)';
     }
     
     lastScroll = currentScroll;
@@ -188,3 +188,207 @@ window.addEventListener('scroll', () => {
         }
     });
 });
+
+// Lightbox Functionality
+const lightbox = document.getElementById('lightbox');
+const lightboxImage = document.getElementById('lightbox-image');
+const lightboxTitle = document.getElementById('lightbox-title');
+const lightboxCounter = document.getElementById('lightbox-counter');
+const lightboxClose = document.querySelector('.lightbox-close');
+const lightboxPrev = document.querySelector('.lightbox-prev');
+const lightboxNext = document.querySelector('.lightbox-next');
+const screenshotItems = document.querySelectorAll('.screenshot-item');
+
+let currentImageIndex = 0;
+let allImages = [];
+let filteredImages = [];
+let currentProject = '';
+
+// Collect all images from screenshot items with project info
+screenshotItems.forEach((item, index) => {
+    const img = item.querySelector('img');
+    if (img) {
+        // Check if item has multiple images in data-images attribute
+        const imagesData = item.getAttribute('data-images');
+        if (imagesData) {
+            try {
+                const imagesArray = JSON.parse(imagesData);
+                imagesArray.forEach((imageData, imgIndex) => {
+                    allImages.push({
+                        src: imageData.src,
+                        title: imageData.title,
+                        project: item.getAttribute('data-project') || '',
+                        originalIndex: index,
+                        isMainImage: imgIndex === 0
+                    });
+                });
+            } catch (e) {
+                console.error('Error parsing data-images:', e);
+                // Fallback to single image
+                allImages.push({
+                    src: item.getAttribute('data-src') || img.src,
+                    title: item.getAttribute('data-title') || img.alt,
+                    project: item.getAttribute('data-project') || '',
+                    originalIndex: index
+                });
+            }
+        } else {
+            // Single image item
+            allImages.push({
+                src: item.getAttribute('data-src') || img.src,
+                title: item.getAttribute('data-title') || img.alt,
+                project: item.getAttribute('data-project') || '',
+                originalIndex: index
+            });
+        }
+    }
+});
+
+// Open lightbox with project filtering
+function openLightbox(index) {
+    const clickedItem = screenshotItems[index];
+    currentProject = clickedItem.getAttribute('data-project') || '';
+    
+    // Check if this item has multiple images
+    const imagesData = clickedItem.getAttribute('data-images');
+    if (imagesData) {
+        try {
+            const imagesArray = JSON.parse(imagesData);
+            filteredImages = imagesArray.map(imageData => ({
+                src: imageData.src,
+                title: imageData.title,
+                project: currentProject
+            }));
+            currentImageIndex = 0; // Start with first image
+        } catch (e) {
+            console.error('Error parsing data-images:', e);
+            // Fallback to project filtering
+            filteredImages = allImages.filter(img => img.project === currentProject);
+            const clickedImage = allImages.find(img => img.originalIndex === index);
+            currentImageIndex = filteredImages.findIndex(img => 
+                img.src === clickedImage.src && img.title === clickedImage.title
+            );
+            if (currentImageIndex === -1) {
+                currentImageIndex = 0;
+            }
+        }
+    } else {
+        // Filter images by project
+        filteredImages = allImages.filter(img => img.project === currentProject);
+        
+        // Find the index of clicked image in filtered array
+        const clickedImage = allImages.find(img => img.originalIndex === index);
+        currentImageIndex = filteredImages.findIndex(img => 
+            img.src === clickedImage.src && img.title === clickedImage.title
+        );
+        
+        // If not found, default to 0
+        if (currentImageIndex === -1) {
+            currentImageIndex = 0;
+        }
+    }
+    
+    updateLightbox();
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+// Close lightbox
+function closeLightbox() {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = ''; // Restore scrolling
+    // Reset filtered images when closed
+    filteredImages = [];
+    currentProject = '';
+}
+
+// Update lightbox content
+function updateLightbox() {
+    if (filteredImages.length > 0 && filteredImages[currentImageIndex]) {
+        lightboxImage.src = filteredImages[currentImageIndex].src;
+        lightboxTitle.textContent = filteredImages[currentImageIndex].title;
+        lightboxCounter.textContent = `${currentImageIndex + 1} / ${filteredImages.length}`;
+    }
+}
+
+// Navigate to previous image (only within current project)
+function prevImage() {
+    if (filteredImages.length > 0) {
+        currentImageIndex = (currentImageIndex - 1 + filteredImages.length) % filteredImages.length;
+        updateLightbox();
+    }
+}
+
+// Navigate to next image (only within current project)
+function nextImage() {
+    if (filteredImages.length > 0) {
+        currentImageIndex = (currentImageIndex + 1) % filteredImages.length;
+        updateLightbox();
+    }
+}
+
+// Event listeners for screenshot items
+screenshotItems.forEach((item, index) => {
+    item.addEventListener('click', () => {
+        openLightbox(index);
+    });
+});
+
+// Close lightbox events
+if (lightboxClose) {
+    lightboxClose.addEventListener('click', closeLightbox);
+}
+
+if (lightbox) {
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) {
+            closeLightbox();
+        }
+    });
+}
+
+// Navigation events
+if (lightboxPrev) {
+    lightboxPrev.addEventListener('click', (e) => {
+        e.stopPropagation();
+        prevImage();
+    });
+}
+
+if (lightboxNext) {
+    lightboxNext.addEventListener('click', (e) => {
+        e.stopPropagation();
+        nextImage();
+    });
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+    if (!lightbox || !lightbox.classList.contains('active')) return;
+
+    switch(e.key) {
+        case 'Escape':
+            closeLightbox();
+            break;
+        case 'ArrowLeft':
+            prevImage();
+            break;
+        case 'ArrowRight':
+            nextImage();
+            break;
+    }
+});
+
+// Prevent lightbox content clicks from closing
+if (lightboxImage) {
+    lightboxImage.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+}
+
+const lightboxContent = document.querySelector('.lightbox-content');
+if (lightboxContent) {
+    lightboxContent.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+}
