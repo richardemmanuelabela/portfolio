@@ -329,6 +329,16 @@ section {
     margin-left: 0.5rem;
 }
 
+.section-description {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    max-width: 700px;
+    margin: -1.5rem auto 3rem;
+    padding: 0 20px;
+}
+
 /* About Section */
 .about {
     background: var(--bg-secondary);
@@ -825,8 +835,13 @@ section {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 0.75rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
     font-family: 'Fira Code', 'Courier New', monospace;
+}
+
+.screenshot-label:first-of-type {
+    margin-top: 0;
 }
 
 .screenshot-label::before {
@@ -838,6 +853,11 @@ section {
     color: var(--text-secondary);
     font-size: 0.95rem;
     line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+.screenshot-content:last-child {
+    margin-bottom: 0;
 }
 
 /* Lightbox Styles */
