@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Google Maps - Auto Marker</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<style>
+		#map {
+			height: 400px;
+			width: 100%;
+			border-radius: 8px;
+		}
+	</style>
+</head>
+
+<body>
+<h2>Google Map</h2>
+<div id="map"></div>
+
+<script>
+	// ✅ Change this to any city or full address
+	const myAddress = "Manila, Philippines";
+	// Example: "1600 Amphitheatre Parkway, Mountain View, CA"
+
+	let map;
+	let geocoder;
+
+	function initMap() {
+		geocoder = new google.maps.Geocoder();
+
+		// Default map center (before geocoding completes)
+		map = new google.maps.Map(document.getElementById("map"), {
+			zoom: 12,
+			center: { lat: 14.5995, lng: 120.9842 }, // Default center: Manila
+		});
+
+		geocoder.geocode({ address: myAddress }, function(results, status) {
+			if (status === "OK") {
+				const location = results[0].geometry.location;
+
+				map.setCenter(location);
+				map.setZoom(14);
+
+				new google.maps.Marker({
+					map: map,
+					position: location,
+					title: myAddress,
+				});
+
+			} else {
+				alert("Geocode failed: " + status);
+			}
+		});
+	}
+</script>
+
+<!-- ✅ Replace YOUR_API_KEY -->
+<script async
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFqUcaK2zT4EtQMi0Ra_yWWOsIpYzz-KY&callback=initMap">
+</script>
+</body>
+</html>
