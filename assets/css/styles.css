@@ -578,6 +578,29 @@ section {
     margin-bottom: 0;
 }
 
+.screenshot-website-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.screenshot-website-link i {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.screenshot-website-link:hover {
+    color: var(--accent);
+}
+
 /* Lightbox Styles */
 .lightbox {
     display: none;
