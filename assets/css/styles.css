@@ -756,6 +756,42 @@ section {
     }
 }
 
+/* GitHub Section */
+.github-section {
+    background: var(--bg-secondary);
+    text-align: center;
+    padding: 5rem 0;
+}
+
+.github-section .section-description {
+    margin-bottom: 2rem;
+}
+
+.btn-github {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.9rem 1.75rem;
+    background: #24292e;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: var(--radius);
+    border: 1px solid #3d444d;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-github:hover {
+    background: #32383e;
+    border-color: #57606a;
+    transform: translateY(-1px);
+}
+
+.btn-github i {
+    font-size: 1.25rem;
+}
+
 /* Contact Section */
 .contact {
     background: var(--bg-secondary);
